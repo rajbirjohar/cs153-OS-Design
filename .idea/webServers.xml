@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="48dbaafd-db3b-4b97-8495-fe258c300163" name="xv6-clion" url="http://sledge.cs.ucr.edu">
+        <fileTransfer rootFolder="/home/csmajs/sjoha005" accessType="SFTP" host="sledge.cs.ucr.edu" port="22" sshConfigId="819e2ed1-cf01-4c45-8a9f-51fd493ff476" sshConfig="sjoha005@sledge.cs.ucr.edu:22 password">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" keepAliveTimeout="0" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>
