@@ -88,7 +88,8 @@ allocproc(void)
 found:
   p->state = EMBRYO;
   p->pid = nextpid++;
-
+  //Lab 2
+  p->priority = 0;
   release(&ptable.lock);
 
   // Allocate kernel stack.
@@ -111,7 +112,7 @@ found:
   p->context = (struct context*)sp;
   memset(p->context, 0, sizeof *p->context);
   p->context->eip = (uint)forkret;
-
+  p->priority = 10;
   return p;
 }
 
@@ -199,7 +200,7 @@ fork(void)
   np->sz = curproc->sz;
   np->parent = curproc;
   *np->tf = *curproc->tf;
-
+  np->priority = curproc->priority;
   // Clear %eax so that fork returns 0 in the child.
   np->tf->eax = 0;
 
@@ -414,22 +415,25 @@ waitpid(int pid, int* status, int options)
 {
     struct proc *p;
     int exists = 0;
-
+    // Runs through table and checks if the process has a child
     acquire(&ptable.lock);
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
         if(p->pid != pid)
             continue;
+        // Breaks if it does
         else{
             exists = 1;
             break;
         }
     }
+    // Exits if it does not
     if(!exists){
         release(&ptable.lock);
         if(status)
             *status = -1;
         return -1;
     }
+    // Scans for exited children
     else{
         for(;;){
             if(p->state == ZOMBIE){
@@ -459,6 +463,12 @@ waitpid(int pid, int* status, int options)
     }
 }
 
+void set_prior(int prior_lvl){
+    struct proc *curproc = myproc();
+    if(prior_lvl >= 0 && prior_lvl <= 31){
+        curproc->priority = prior_lvl;
+    }
+}
 //PAGEBREAK: 42
 // Per-CPU process scheduler.
 // Each CPU calls scheduler() after setting itself up.
@@ -470,37 +480,51 @@ waitpid(int pid, int* status, int options)
 void
 scheduler(void)
 {
-  struct proc *p;
-  struct cpu *c = mycpu();
-  c->proc = 0;
-  
-  for(;;){
-    // Enable interrupts on this processor.
-    sti();
+    struct proc *p;
+    struct proc *p1;
+    struct proc *prio;
+    struct cpu *c = mycpu();
+    c->proc = 0;
 
-    // Loop over process table looking for process to run.
-    acquire(&ptable.lock);
-    for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-      if(p->state != RUNNABLE)
-        continue;
+    for(;;){
+        // Enable interrupts on this processor.
+        sti();
 
-      // Switch to chosen process.  It is the process's job
-      // to release ptable.lock and then reacquire it
-      // before jumping back to us.
-      c->proc = p;
-      switchuvm(p);
-      p->state = RUNNING;
+        // Loop over process table looking for process to run.
+        acquire(&ptable.lock);
+        for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+            if(p->state != RUNNABLE)
+                continue;
 
-      swtch(&(c->scheduler), p->context);
-      switchkvm();
+            prio = p;
 
-      // Process is done running for now.
-      // It should have changed its p->state before coming back.
-      c->proc = 0;
+            for(p1 = ptable.proc; p1 < &ptable.proc[NPROC]; p1++){
+                if(p1->state != RUNNABLE)
+                    continue;
+
+                if(prio->priority > p1->priority)
+                    prio = p1;
+            }
+            p = prio;
+
+            // Switch to chosen process.  It is the process's job
+            // to release ptable.lock and then reacquire it
+            // before jumping back to us.
+            c->proc = p;
+            switchuvm(p);
+            p->state = RUNNING;
+
+            swtch(&(c->scheduler), p->context);
+            switchkvm();
+
+            // Process is done running for now.
+            // It should have changed its p->state before coming back.
+            c->proc = 0;
+        }
+
+        release(&ptable.lock);
+
     }
-    release(&ptable.lock);
-
-  }
 }
 
 // Enter scheduler.  Must hold only ptable.lock

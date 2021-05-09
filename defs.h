@@ -124,6 +124,7 @@ void            hello(void);
 void            exitS(int);
 int				waitS(int*);
 int				waitpid(int, int*, int);
+void						set_prior(int);
 
 // swtch.S
 void            swtch(struct context**, struct context*);
