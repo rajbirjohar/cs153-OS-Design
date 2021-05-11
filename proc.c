@@ -81,7 +81,7 @@ allocproc(void)
   for(p = ptable.proc; p < &ptable.proc[NPROC]; p++)
     if(p->state == UNUSED)
       goto found;
-
+  
   release(&ptable.lock);
   return 0;
 
@@ -90,8 +90,8 @@ found:
   p->pid = nextpid++;
   //Lab 2
   p->priority = 0;
+  p->burstTime = 0;
   release(&ptable.lock);
-
   // Allocate kernel stack.
   if((p->kstack = kalloc()) == 0){
     p->state = UNUSED;
@@ -113,6 +113,7 @@ found:
   memset(p->context, 0, sizeof *p->context);
   p->context->eip = (uint)forkret;
   p->priority = 10;
+  p->start_time = ticks;
   return p;
 }
 
@@ -261,6 +262,11 @@ exit(void)
         wakeup1(initproc);
     }
   }
+  
+  uint endTime = ticks;
+  uint turnaroundtime = endTime - p->start_time;
+  cprintf("Turnaround time is:  %d\n", turnaroundtime);
+  cprintf("Waiting time is:     %d\n", turnaroundtime - p->burstTime);
 
   // Jump into the scheduler, never to return.
   curproc->state = ZOMBIE;
@@ -309,6 +315,11 @@ exitS(int status)
                 wakeup1(initproc);
         }
     }
+    
+	//uint endTime = ticks;
+	//uint turnaroundtime = endTime - curproc->start_time;
+	//cprintf("Turnaround time is:  %d\n", turnaroundtime);
+	//cprintf("Waiting time is:     %d\n", turnaroundtime - p->burstTime);
 
     // Jump into the scheduler, never to return.
     curproc->state = ZOMBIE;
@@ -465,9 +476,11 @@ waitpid(int pid, int* status, int options)
 
 void set_prior(int prior_lvl){
     struct proc *curproc = myproc();
+    acquire(&ptable.lock);
     if(prior_lvl >= 0 && prior_lvl <= 31){
         curproc->priority = prior_lvl;
     }
+    release(&ptable.lock);
 }
 //PAGEBREAK: 42
 // Per-CPU process scheduler.
@@ -513,13 +526,24 @@ scheduler(void)
             c->proc = p;
             switchuvm(p);
             p->state = RUNNING;
-
+            p->burstTime++;
+            
             swtch(&(c->scheduler), p->context);
             switchkvm();
 
             // Process is done running for now.
             // It should have changed its p->state before coming back.
             c->proc = 0;
+            
+            for(p1 = ptable.proc; p1 < &ptable.proc[NPROC]; p1++){
+				if(p1->state == RUNNABLE){
+					if(p1 == p && p1->priority < 31){
+						p1->priority = p1->priority + 1;
+					}else if(p1 != p && p1->priority > 0){
+						p1->priority = p1->priority - 1;
+					}
+				}
+			}
         }
 
         release(&ptable.lock);
@@ -704,6 +728,14 @@ procdump(void)
     cprintf("\n");
   }
 }
+
+//uint start_time(void){
+	//uint xticks;
+	//acquire(&ptable.lock);
+	//xticks = ticks;
+	//release(&ptable.lock);
+	//return xticks;
+//}
 
 void
 hello(void){

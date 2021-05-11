@@ -51,7 +51,13 @@ struct proc {
   char name[16];               // Process name (debugging)
   int status;                  // Lab 1: status for exit
   int priority;                // Lab 2: priority for scheduler
+  uint start_time;			   // Starting time
+  uint burstTime;			   // Burst Time
+  uint runtime;				   // Program Runtime
+  uint responsetime;		   // Inbetween time
 };
+
+uint temptime;
 
 // Process memory is laid out contiguously, low addresses first:
 //   text
