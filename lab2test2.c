@@ -27,8 +27,8 @@ int priorityScheduler(void){
                     asm("nop");
                 }
             }
-            printf(1, "\nChild# %d with priority %d completed.\n",getpid(),priority[i]);
-            exit(0);
+            printf(1, "\nChild# %d with priority %d completed. Test 2.\n",getpid(),priority[i]);
+            exitS(1);
         }else{printf(2,"\nError\n");}
     }
     if(pid > 0){

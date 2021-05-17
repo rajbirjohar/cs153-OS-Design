@@ -499,6 +499,7 @@ scheduler(void)
     struct proc *p;
     struct proc *p1;
     struct proc *prio;
+    struct proc *p2;
     struct cpu *c = mycpu();
     c->proc = 0;
 
@@ -538,13 +539,13 @@ scheduler(void)
             // It should have changed its p->state before coming back.
             c->proc = 0;
             
-            for(p1 = ptable.proc; p1 < &ptable.proc[NPROC]; p1++){
-				if(p1->state == RUNNABLE){
-					if(p1 == p && p1->priority < 31){
-						p1->priority = p1->priority + 1;
-					}else if(p1 != p && p1->priority > 0){
+            if(p->priority < 31){
+				p1->priority = p1->priority + 1;
+			}
+            
+            for(p2 = ptable.proc; p2 < &ptable.proc[NPROC]; p2++){
+				if(p2 != p && p1->priority > 0){
 						p1->priority = p1->priority - 1;
-					}
 				}
 			}
         }

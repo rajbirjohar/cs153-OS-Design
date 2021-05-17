@@ -3,6 +3,7 @@
 //#include "stat.h"
 //#include "x86.h"
 #include "spinlock.h"
+//#include "defs.h"
 
 int priorityScheduler(void);
 
@@ -37,8 +38,8 @@ int priorityScheduler(void){
                     asm("nop");
                 }
             }
-            printf(1, "\nChild# %d with priority %d completed.\n",getpid(),30 - 5 * i);
-            exit();
+            printf(1,"\nChild# %d with priority %d completed. Test 1.\n",getpid(),30 - 5 * i);
+            exitS(1);
         }else{printf(2,"\nError\n");}
     }
     if(pid > 0){
@@ -47,6 +48,7 @@ int priorityScheduler(void){
         }
         printf(1,"If process with higher priority finished first then it is correct.");
     }
+    //wait();
     //exit();
     return 0;
 }
