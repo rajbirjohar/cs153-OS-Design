@@ -89,8 +89,10 @@ found:
   p->state = EMBRYO;
   p->pid = nextpid++;
   //Lab 2
+  //acquire(&ptable.lock);
   p->priority = 0;
   p->burstTime = 0;
+  p->start_time = ticks;
   release(&ptable.lock);
   // Allocate kernel stack.
   if((p->kstack = kalloc()) == 0){
@@ -113,7 +115,6 @@ found:
   memset(p->context, 0, sizeof *p->context);
   p->context->eip = (uint)forkret;
   p->priority = 10;
-  p->start_time = ticks;
   return p;
 }
 
@@ -263,10 +264,10 @@ exit(void)
     }
   }
   
-  uint endTime = ticks;
-  uint turnaroundtime = endTime - p->start_time;
-  cprintf("Turnaround time is:  %d\n", turnaroundtime);
-  cprintf("Waiting time is:     %d\n", turnaroundtime - p->burstTime);
+  //uint endTime = ticks;
+  //uint turnaroundtime = endTime - p->start_time;
+  //cprintf("Turnaround time is:  %d\n", turnaroundtime);
+  //cprintf("Waiting time is:     %d\n", turnaroundtime - p->burstTime);
 
   // Jump into the scheduler, never to return.
   curproc->state = ZOMBIE;
@@ -301,6 +302,11 @@ exitS(int status)
     iput(curproc->cwd);
     end_op();
     curproc->cwd = 0;
+    
+    uint endTime = ticks;
+	uint turnaroundtime = endTime - curproc->start_time;
+	cprintf("Turnaround time is:  %d\n", turnaroundtime);
+	cprintf("Waiting time is:     %d\n", turnaroundtime - curproc->burstTime);
 
     acquire(&ptable.lock);
 
@@ -316,10 +322,7 @@ exitS(int status)
         }
     }
     
-	//uint endTime = ticks;
-	//uint turnaroundtime = endTime - curproc->start_time;
-	//cprintf("Turnaround time is:  %d\n", turnaroundtime);
-	//cprintf("Waiting time is:     %d\n", turnaroundtime - p->burstTime);
+	
 
     // Jump into the scheduler, never to return.
     curproc->state = ZOMBIE;
