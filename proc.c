@@ -544,8 +544,8 @@ scheduler(void)
 			}
             
             for(p2 = ptable.proc; p2 < &ptable.proc[NPROC]; p2++){
-				if(p2 != p && p1->priority > 0){
-						p1->priority = p1->priority - 1;
+				if(p2 != p && p2->priority > 0){
+						p2->priority = p2->priority - 1;
 				}
 			}
         }
