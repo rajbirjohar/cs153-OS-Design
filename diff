@@ -1,0 +1,1129 @@
+diff --git a/.idea/misc.xml b/.idea/misc.xml
+index bedf918..53624c9 100644
+--- a/.idea/misc.xml
++++ b/.idea/misc.xml
+@@ -5,6 +5,11 @@
+     <option name="linkedExternalProjectsSettings">
+       <MakefileProjectSettings>
+         <option name="externalProjectPath" value="$PROJECT_DIR$" />
++        <option name="modules">
++          <set>
++            <option value="$PROJECT_DIR$" />
++          </set>
++        </option>
+         <option name="version" value="2" />
+       </MakefileProjectSettings>
+     </option>
+diff --git a/.idea/modules.xml b/.idea/modules.xml
+deleted file mode 100644
+index 7b63042..0000000
+--- a/.idea/modules.xml
++++ /dev/null
+@@ -1,8 +0,0 @@
+-<?xml version="1.0" encoding="UTF-8"?>
+-<project version="4">
+-  <component name="ProjectModuleManager">
+-    <modules>
+-      <module fileurl="file://$PROJECT_DIR$/.idea/xv6.iml" filepath="$PROJECT_DIR$/.idea/xv6.iml" />
+-    </modules>
+-  </component>
+-</project>
+\ No newline at end of file
+diff --git a/.idea/xv6.iml b/.idea/xv6.iml
+index 771e54c..5777dc9 100644
+--- a/.idea/xv6.iml
++++ b/.idea/xv6.iml
+@@ -1,2 +1,2 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+-<module classpath="External" type="CPP_MODULE" version="4" />
+\ No newline at end of file
++<module classpath="External" external.linked.project.id="xv6" external.linked.project.path="$MODULE_DIR$" external.root.project.path="$MODULE_DIR$" external.system.id="Makefile" type="CPP_MODULE" version="4" />
+\ No newline at end of file
+diff --git a/Makefile b/Makefile
+index e8cd945..0bba8c8 100644
+--- a/Makefile
++++ b/Makefile
+@@ -76,7 +76,7 @@ AS = $(TOOLPREFIX)gas
+ LD = $(TOOLPREFIX)ld
+ OBJCOPY = $(TOOLPREFIX)objcopy
+ OBJDUMP = $(TOOLPREFIX)objdump
+-CFLAGS = -fno-pic -static -fno-builtin -fno-strict-aliasing -O2 -Wall -MD -ggdb -m32 -Werror -fno-omit-frame-pointer
++CFLAGS = -fno-pic -static -fno-builtin -fno-strict-aliasing -Wall -MD -ggdb -m32 -Werror -fno-omit-frame-pointer -gdwarf-2
+ CFLAGS += $(shell $(CC) -fno-stack-protector -E -x c /dev/null >/dev/null 2>&1 && echo -fno-stack-protector)
+ ASFLAGS = -m32 -gdwarf-2 -Wa,-divide
+ # FreeBSD ld wants ``elf_i386_fbsd''
+@@ -182,6 +182,10 @@ UPROGS=\
+ 	_wc\
+ 	_zombie\
+ 	_hello\
++	_test\
++	_lab2test\
++	_lab2test2\
++	_lab2test3\
+ 
+ fs.img: mkfs README $(UPROGS)
+ 	./mkfs fs.img README $(UPROGS)
+@@ -218,7 +222,7 @@ QEMUGDB = $(shell if $(QEMU) -help | grep -q '^-gdb'; \
+ 	then echo "-gdb tcp::$(GDBPORT)"; \
+ 	else echo "-s -p $(GDBPORT)"; fi)
+ ifndef CPUS
+-CPUS := 2
++CPUS := 1
+ endif
+ QEMUOPTS = -drive file=fs.img,index=1,media=disk,format=raw -drive file=xv6.img,index=0,media=disk,format=raw -smp $(CPUS) -m 512 $(QEMUEXTRA)
+ 
+@@ -251,7 +255,7 @@ qemu-nox-gdb: fs.img xv6.img .gdbinit
+ EXTRA=\
+ 	mkfs.c ulib.c user.h cat.c echo.c forktest.c grep.c kill.c\
+ 	ln.c ls.c mkdir.c rm.c stressfs.c usertests.c wc.c zombie.c\
+-	printf.c umalloc.c\
++	printf.c umalloc.c lab2test.c\ lab2test2.c\ lab2test3.c\
+ 	README dot-bochsrc *.pl toc.* runoff runoff1 runoff.list\
+ 	.gdbinit.tmpl gdbutil\
+ 
+diff --git a/READ.md b/READ.md
+new file mode 100644
+index 0000000..193a793
+--- /dev/null
++++ b/READ.md
+@@ -0,0 +1,29 @@
++# cs153 - Design of Operating Systems
++
++> Author: Rajbir Johar
++
++## Purpose
++
++This repository is meant to record all the labs for cs153 - Design of Operating Systems.
++
++## Structure
++
++Each branch is specifically for each lab. Thus, I will only commit specific lab changes to the corresponding branch.
++
++```bash
++├── master
++│   ├── branch lab-1
++│   │   ├── lab1-files
++│   │   │   ├── hello.c
++│   │   │   ├── MakeFile
++│   ├── branch lab-2
++│   │   ├── lab2-files
++│   │   │   ├── hello.c
++│   │   │   ├── ...
++│   ├── ...
++└── .gitignore
++```
++
++## Future Notes
++
++This repo/read.md will be updated as the class progresses.
+diff --git a/README b/README
+deleted file mode 100644
+index 923e0a4..0000000
+--- a/README
++++ /dev/null
+@@ -1,51 +0,0 @@
+-NOTE: we have stopped maintaining the x86 version of xv6, and switched
+-our efforts to the RISC-V version
+-(https://github.com/mit-pdos/xv6-riscv.git)
+-
+-xv6 is a re-implementation of Dennis Ritchie's and Ken Thompson's Unix
+-Version 6 (v6).  xv6 loosely follows the structure and style of v6,
+-but is implemented for a modern x86-based multiprocessor using ANSI C.
+-
+-ACKNOWLEDGMENTS
+-
+-xv6 is inspired by John Lions's Commentary on UNIX 6th Edition (Peer
+-to Peer Communications; ISBN: 1-57398-013-7; 1st edition (June 14,
+-2000)). See also https://pdos.csail.mit.edu/6.828/, which
+-provides pointers to on-line resources for v6.
+-
+-xv6 borrows code from the following sources:
+-    JOS (asm.h, elf.h, mmu.h, bootasm.S, ide.c, console.c, and others)
+-    Plan 9 (entryother.S, mp.h, mp.c, lapic.c)
+-    FreeBSD (ioapic.c)
+-    NetBSD (console.c)
+-
+-The following people have made contributions: Russ Cox (context switching,
+-locking), Cliff Frey (MP), Xiao Yu (MP), Nickolai Zeldovich, and Austin
+-Clements.
+-
+-We are also grateful for the bug reports and patches contributed by Silas
+-Boyd-Wickizer, Anton Burtsev, Cody Cutler, Mike CAT, Tej Chajed, eyalz800,
+-Nelson Elhage, Saar Ettinger, Alice Ferrazzi, Nathaniel Filardo, Peter
+-Froehlich, Yakir Goaron,Shivam Handa, Bryan Henry, Jim Huang, Alexander
+-Kapshuk, Anders Kaseorg, kehao95, Wolfgang Keller, Eddie Kohler, Austin
+-Liew, Imbar Marinescu, Yandong Mao, Matan Shabtay, Hitoshi Mitake, Carmi
+-Merimovich, Mark Morrissey, mtasm, Joel Nider, Greg Price, Ayan Shafqat,
+-Eldar Sehayek, Yongming Shen, Cam Tenny, tyfkda, Rafael Ubal, Warren
+-Toomey, Stephen Tu, Pablo Ventura, Xi Wang, Keiichi Watanabe, Nicolas
+-Wolovick, wxdao, Grant Wu, Jindong Zhang, Icenowy Zheng, and Zou Chang Wei.
+-
+-The code in the files that constitute xv6 is
+-Copyright 2006-2018 Frans Kaashoek, Robert Morris, and Russ Cox.
+-
+-ERROR REPORTS
+-
+-We don't process error reports (see note on top of this file).
+-
+-BUILDING AND RUNNING XV6
+-
+-To build xv6 on an x86 ELF machine (like Linux or FreeBSD), run
+-"make". On non-x86 or non-ELF machines (like OS X, even on x86), you
+-will need to install a cross-compiler gcc suite capable of producing
+-x86 ELF binaries (see https://pdos.csail.mit.edu/6.828/).
+-Then run "make TOOLPREFIX=i386-jos-elf-". Now install the QEMU PC
+-simulator and run "make qemu".
+\ No newline at end of file
+diff --git a/README.md b/README.md
+new file mode 100644
+index 0000000..7fbf6d5
+--- /dev/null
++++ b/README.md
+@@ -0,0 +1,29 @@
++# cs153 - Design of Operating Systems
++
++> Author: Rajbir Johar
++
++## Purpose
++
++This repository is meant to record all the labs for cs153 - Design of Operating Systems.
++
++## Structure
++
++Each branch is specifically for each lab. Thus, I will only commit specific lab changes to the corresponding branch.
++
++```bash
++├── master
++│   ├── branch lab-1
++│   │   ├── xv6
++│   │   │   ├── hello.c
++│   │   │   ├── kernel
++│   ├── branch lab-2
++│   │   ├── xv6
++│   │   │   ├── hello.c
++│   │   │   ├── ...
++│   ├── ...
++└── .gitignore
++```
++
++## Future Notes
++
++This repo/read.md will be updated as the class progresses.
+diff --git a/defs.h b/defs.h
+index 82fb982..3645ca4 100644
+--- a/defs.h
++++ b/defs.h
+@@ -120,6 +120,11 @@ void            userinit(void);
+ int             wait(void);
+ void            wakeup(void*);
+ void            yield(void);
++void            hello(void);
++void            exitS(int);
++int				waitS(int*);
++int				waitpid(int, int*, int);
++void						set_prior(int);
+ 
+ // swtch.S
+ void            swtch(struct context**, struct context*);
+diff --git a/hello.c b/hello.c
+index cf65792..792429b 100644
+--- a/hello.c
++++ b/hello.c
+@@ -1,10 +1,7 @@
+-#include "types.h"
+-#include "user.h"
+-
+-int main (int argc, char **argv) {
+-    printf(1,"Hello World!\nThis is Rajbir's first C program.\n"); // fd,std out
+-    exit(); //exit the program
+-}
++//int main (int argc, char **argv) {
++//    printf(1,"Hello World!\nThis is Rajbir's first C program.\n"); // fd,std out
++//    exit(); //exit the program
++//}
+ 
+ // 1. Boot xv6
+ // $ cd xv6
+@@ -20,3 +17,5 @@ int main (int argc, char **argv) {
+ // [local] password:
+ // [local] -> [sledge] (keep this running)
+ 
++
++
+diff --git a/lab1test.c b/lab1test.c
+new file mode 100644
+index 0000000..78aa0b1
+--- /dev/null
++++ b/lab1test.c
+@@ -0,0 +1,177 @@
++//#include "types.h"
++//#include "user.h"
++//
++//int main(int argc, char *argv[])
++//{
++//    int waitPid(void);
++//
++//    printf(1, "\n This program tests the correctness of lab#1\n");
++//
++//    if (atoi(argv[1]) == 1)
++//        waitPid();
++//    else
++//        printf(1, "\n Type \"lab1test 1\" to test waitpid. \n");
++//
++//    // End of test
++//    exitS(0);
++//    return 0;
++//}
++//
++//int waitPid(void){
++//
++//    int ret_pid, exit_status;
++//    int i;
++//    int pid_a[2]={0, 0};
++//
++//    printf(1, "\n  Part c) testing waitpid(int pid, int* status, int options):\n");
++//
++//    for (i = 0; i <2; i++) {
++//        pid_a[i] = fork();
++//        if (pid_a[i] == 0) { // only the child executed this code
++//            printf(1, "\n Child pid# %d expected to exit with status %d\n", getpid(), getpid());
++//            exitS(getpid());
++//        }
++//    }
++//
++//    sleep(5);
++//    printf(1, "\n Parent: Waiting for child pid# %d\n",pid_a[0]);
++//    ret_pid = waitpid(pid_a[0], &exit_status, 0);
++//    printf(1, "\n Parent: Child pid# %d has exited with status %d\n",ret_pid, exit_status);
++//
++//    sleep(5);
++//    printf(1, "\n Parent: Waiting for child pid# %d\n",pid_a[1]);
++//    ret_pid = waitpid(pid_a[1], &exit_status, 0);
++//    printf(1, "\n Parent: Child pid# %d has exited with status %d\n",ret_pid, exit_status);
++//
++//    return 0;
++//}
++
++//#include <pthread.h>
++//#include <stdio.h>
++//
++//#define len 8
++//
++//int sum = 0;
++//
++//void *array_sum(void *arg)
++//{
++//    int i;
++//    int *val = (int *)arg;
++//    for(i=0; i<2; i++)
++//    {
++//        sum += val[i];
++//    }
++//    pthread_exit(0);
++//}
++//
++//int main() {
++//    int i;
++//    int j;
++//    pthread_t thread[2];
++//    int A[2][2] = {{1,2},{3,4}};
++//
++//    for(i=0; i<2; i++) {
++//        pthread_create(&thread[i], NULL, array_sum, A[i]);
++//    }
++//
++//    for(j=0; j<2; j++) {
++//        pthread_join(thread[j], NULL);
++//    }
++//
++//    printf("\nSum of arrays [1,2] and [3,4] is %d\n", sum);
++//
++//    return 0;
++//}
++//
++//#include <stdio.h>
++//#include <pthread.h>
++//#include <semaphore.h>
++//#include <stdlib.h>
++//#include <unistd.h>
++//#include <time.h>
++//sem_t semaphore;
++//int gameOver = 0;
++//void* player1_thread() {
++//    sem_wait(&semaphore);
++//    if(gameOver != 1) {
++//        if (rand() % 5 == 0) {
++//            printf("Player 1 drops the ball.\n");
++//            gameOver = 1;
++//        } else {
++//            printf("Player 1 hits it back to Player 2.\n");
++//        }
++//    }
++//    sem_post(&semaphore);
++//    return NULL;
++//}
++//void* player2_thread() {
++//    sem_wait(&semaphore);
++//    if(gameOver !=1) {
++//        if (rand() % 5 == 0) {
++//            printf("Player 2 drops the ball.\n");
++//            gameOver = 1;
++//        } else {
++//            printf("Player 2 hits it back to Player 1.\n");
++//        }
++//    }
++//    sem_post(&semaphore);
++//
++//    return NULL;
++//}
++//int main() {
++//    pthread_t thread_1, thread_2;
++//
++//    sem_init(&semaphore,0, 1);
++//    printf("Player 1 serves.\n");
++//    srand(time(0));
++//
++//    while(gameOver == 0){
++//        pthread_create(&thread_2, NULL, &player2_thread,NULL);
++//        pthread_create(&thread_1, NULL, &player1_thread,NULL);
++//
++//    }
++//
++//    pthread_join(thread_1, NULL);
++//    pthread_join(thread_2, NULL);
++//    sem_destroy(&semaphore);
++//    return 0;
++//}
++
++#include <stdio.h>
++#include <pthread.h>
++#include <semaphore.h>
++
++int count = 5;
++
++sem_t mutex;
++sem_t barrier;
++
++int i;
++
++void *order(void *arg){
++
++    sem_wait(&mutex);
++    count--;
++    printf("Person %d has entered.\n", i);
++    sem_post(&mutex);
++
++    if(count == 0){
++        sem_post(&barrier);
++    }
++
++    pthread_exit(0);
++}
++
++int main(){
++    pthread_t thread[5];
++
++    sem_init(&mutex, 0, 1);
++    sem_init(&barrier, 0, 0);
++
++    for(i = 1; i < 6; i++){
++        pthread_create(&thread[i], NULL, order, NULL);
++
++    }
++    printf("All persons have arrived. Ordering now.\n");
++    return 0;
++}
+\ No newline at end of file
+diff --git a/lab2test.c b/lab2test.c
+new file mode 100644
+index 0000000..c56de41
+--- /dev/null
++++ b/lab2test.c
+@@ -0,0 +1,54 @@
++#include "types.h"
++#include "user.h"
++//#include "stat.h"
++//#include "x86.h"
++#include "spinlock.h"
++//#include "defs.h"
++
++int priorityScheduler(void);
++
++int main(int argc, char *argv[]){
++	//printlock_init();
++    printf(1, "\nThis program tests lab #2.\n");
++    priorityScheduler();
++    return 0;
++}
++
++//void printlock_init(void){
++	//strcopy(lock.name, "printlock");
++	//lock.ticket = 0;
++	//lock.tun = 0;
++//}
++
++int priorityScheduler(void){
++    int pid[6];
++    int i,j,k;
++    printf(1,"\nThis lab converts round robin to priority scheduler with a system call. "
++             "\nThe priorities range form 0-31 with 0 being the highest priority.\n");
++    set_prior(0);
++    for (i = 0; i <  6; i++){
++        pid[i] = fork();
++        if (pid[i] > 0 ) {
++            continue;}
++        else if ( pid[i] == 0){
++            set_prior(30 - 5 * i);
++            for (j=0;j<50000;j++){
++				asm("nop");
++                for(k=0;k<1000;k++){
++                    asm("nop");
++                }
++            }
++            printf(1,"\nChild# %d with priority %d completed. Test 1.\n",getpid(),30 - 5 * i);
++            exitS(1);
++        }else{printf(2,"\nError\n");}
++    }
++    if(pid > 0){
++        for (i = 0; i <  6; i++){
++            wait();
++        }
++        printf(1,"If process with higher priority finished first then it is correct.");
++    }
++    //wait();
++    //exit();
++    return 0;
++}
+diff --git a/lab2test2.c b/lab2test2.c
+new file mode 100644
+index 0000000..94b44cb
+--- /dev/null
++++ b/lab2test2.c
+@@ -0,0 +1,42 @@
++#include "types.h"
++#include "user.h"
++
++int main(int argc, char *argv[]){
++    int priorityScheduler(void);
++    printf(1, "\nThis program tests lab #2.\n");
++    priorityScheduler();
++    return 0;
++}
++
++int priorityScheduler(void){
++    int pid[5];
++    int priority[5] = {22, 13, 18, 6, 30};
++    int i,j,k;
++    printf(1,"\nThis lab converts round robin to priority scheduler with a system call. "
++             "\nThe priorities range form 0-31 with 0 being the highest priority.\n");
++    set_prior(0);
++    for (i = 0; i <  5; i++){
++        pid[i] = fork();
++        if (pid[i] > 0 ) {
++            continue;}
++        else if ( pid[i] == 0){
++            set_prior(priority[i]);
++            for (j=0;j<50000;j++){
++				asm("nop");
++                for(k=0;k<1000;k++){
++                    asm("nop");
++                }
++            }
++            printf(1, "\nChild# %d with priority %d completed. Test 2.\n",getpid(),priority[i]);
++            exitS(1);
++        }else{printf(2,"\nError\n");}
++    }
++    if(pid > 0){
++        for (i = 0; i <  5; i++){
++            wait();
++        }
++        printf(1,"If process with higher priority finished first then it is correct.");
++    }
++    //exit();
++    return 0;
++}
+diff --git a/lab2test3.c b/lab2test3.c
+new file mode 100644
+index 0000000..eb9cd90
+--- /dev/null
++++ b/lab2test3.c
+@@ -0,0 +1,42 @@
++#include "types.h"
++#include "user.h"
++
++int main(int argc, char *argv[]){
++    int priorityScheduler(void);
++    printf(1, "\nThis program tests lab #2.\n");
++    priorityScheduler();
++    return 0;
++}
++
++int priorityScheduler(void){
++    int pid[3];
++    int priority[3] = {11, 6, 28};
++    int i,j,k;
++    printf(1,"\nThis lab converts round robin to priority scheduler with a system call. "
++             "\nThe priorities range form 0-31 with 0 being the highest priority.\n");
++    set_prior(0);
++    for (i = 0; i <  3; i++){
++        pid[i] = fork();
++        if (pid[i] > 0 ) {
++            continue;}
++        else if ( pid[i] == 0){
++            set_prior(priority[i]);
++            for (j=0;j<50000;j++){
++				asm("nop");
++                for(k=0;k<1000;k++){
++                    asm("nop");
++                }
++            }
++            printf(1, "\nChild# %d with priority %d completed. Test 3.\n",getpid(),priority[i]);
++            exitS(1);
++        }else{printf(2,"\nError\n");}
++    }
++    if(pid > 0){
++        for (i = 0; i <  3; i++){
++            wait();
++        }
++        printf(1,"If process with higher priority finished first then it is correct.");
++    }
++    //exit();
++    return 0;
++}
+diff --git a/proc.c b/proc.c
+index 806b1b1..a662300 100644
+--- a/proc.c
++++ b/proc.c
+@@ -81,16 +81,19 @@ allocproc(void)
+   for(p = ptable.proc; p < &ptable.proc[NPROC]; p++)
+     if(p->state == UNUSED)
+       goto found;
+-
++  
+   release(&ptable.lock);
+   return 0;
+ 
+ found:
+   p->state = EMBRYO;
+   p->pid = nextpid++;
+-
++  //Lab 2
++  //acquire(&ptable.lock);
++  p->priority = 0;
++  p->burstTime = 0;
++  p->start_time = ticks;
+   release(&ptable.lock);
+-
+   // Allocate kernel stack.
+   if((p->kstack = kalloc()) == 0){
+     p->state = UNUSED;
+@@ -111,7 +114,7 @@ found:
+   p->context = (struct context*)sp;
+   memset(p->context, 0, sizeof *p->context);
+   p->context->eip = (uint)forkret;
+-
++  p->priority = 10;
+   return p;
+ }
+ 
+@@ -199,7 +202,7 @@ fork(void)
+   np->sz = curproc->sz;
+   np->parent = curproc;
+   *np->tf = *curproc->tf;
+-
++  np->priority = curproc->priority;
+   // Clear %eax so that fork returns 0 in the child.
+   np->tf->eax = 0;
+ 
+@@ -260,6 +263,11 @@ exit(void)
+         wakeup1(initproc);
+     }
+   }
++  
++  //uint endTime = ticks;
++  //uint turnaroundtime = endTime - p->start_time;
++  //cprintf("Turnaround time is:  %d\n", turnaroundtime);
++  //cprintf("Waiting time is:     %d\n", turnaroundtime - p->burstTime);
+ 
+   // Jump into the scheduler, never to return.
+   curproc->state = ZOMBIE;
+@@ -267,6 +275,61 @@ exit(void)
+   panic("zombie exit");
+ }
+ 
++// Exit the current process.  Does not return.
++// An exited process remains in the zombie state
++// until its parent calls wait() to find out it exited.
++void
++exitS(int status)
++{
++    struct proc *curproc = myproc();
++    struct proc *p;
++    int fd;
++
++    curproc->status = status;
++
++    if(curproc == initproc)
++        panic("init exiting");
++
++    // Close all open files.
++    for(fd = 0; fd < NOFILE; fd++){
++        if(curproc->ofile[fd]){
++            fileclose(curproc->ofile[fd]);
++            curproc->ofile[fd] = 0;
++        }
++    }
++
++    begin_op();
++    iput(curproc->cwd);
++    end_op();
++    curproc->cwd = 0;
++    
++    uint endTime = ticks;
++	uint turnaroundtime = endTime - curproc->start_time;
++	cprintf("Turnaround time is:  %d\n", turnaroundtime);
++	cprintf("Waiting time is:     %d\n", turnaroundtime - curproc->burstTime);
++
++    acquire(&ptable.lock);
++
++    // Parent might be sleeping in wait().
++    wakeup1(curproc->parent);
++
++    // Pass abandoned children to init.
++    for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
++        if(p->parent == curproc){
++            p->parent = initproc;
++            if(p->state == ZOMBIE)
++                wakeup1(initproc);
++        }
++    }
++    
++	
++
++    // Jump into the scheduler, never to return.
++    curproc->state = ZOMBIE;
++    sched();
++    panic("zombie exit");
++}
++
+ // Wait for a child process to exit and return its pid.
+ // Return -1 if this process has no children.
+ int
+@@ -311,6 +374,117 @@ wait(void)
+   }
+ }
+ 
++// Wait for a child process to exit and return its pid.
++// Return -1 if this process has no children.
++int
++waitS(int* status)
++{
++    struct proc *p;
++    int havekids, pid;
++    struct proc *curproc = myproc();
++
++    acquire(&ptable.lock);
++    for(;;){
++        // Scan through table looking for exited children.
++        havekids = 0;
++        for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
++            if(p->parent != curproc)
++                continue;
++            havekids = 1;
++            if(p->state == ZOMBIE){
++                // Found one.
++                pid = p->pid;
++                kfree(p->kstack);
++                p->kstack = 0;
++                freevm(p->pgdir);
++                p->pid = 0;
++                p->parent = 0;
++                p->name[0] = 0;
++                p->killed = 0;
++                p->state = UNUSED;
++                if(status)
++                    *status = p->status;
++                release(&ptable.lock);
++                return pid;
++            }
++        }
++
++        // No point waiting if we don't have any children.
++        if(!havekids || curproc->killed){
++            release(&ptable.lock);
++            if(status)
++                *status = -1;
++            return -1;
++        }
++
++        // Wait for children to exit.  (See wakeup1 call in proc_exit.)
++        sleep(curproc, &ptable.lock);  //DOC: wait-sleep
++    }
++}
++
++// Wait for a child process to exit and return its pid.
++// Return -1 if this process has no children.
++int
++waitpid(int pid, int* status, int options)
++{
++    struct proc *p;
++    int exists = 0;
++    // Runs through table and checks if the process has a child
++    acquire(&ptable.lock);
++    for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
++        if(p->pid != pid)
++            continue;
++        // Breaks if it does
++        else{
++            exists = 1;
++            break;
++        }
++    }
++    // Exits if it does not
++    if(!exists){
++        release(&ptable.lock);
++        if(status)
++            *status = -1;
++        return -1;
++    }
++    // Scans for exited children
++    else{
++        for(;;){
++            if(p->state == ZOMBIE){
++                // Found one.
++                pid = p->pid;
++                kfree(p->kstack);
++                p->kstack = 0;
++                freevm(p->pgdir);
++                p->pid = 0;
++                p->parent = 0;
++                p->name[0] = 0;
++                p->killed = 0;
++                p->state = UNUSED;
++                if(status)
++                    *status = p->status;
++                release(&ptable.lock);
++                return pid;
++            }
++            else if(p->state == UNUSED){
++                if(status)
++                    *status = p->status;
++                release(&ptable.lock);
++                return pid;
++            }
++            sleep(p, &ptable.lock);
++        }
++    }
++}
++
++void set_prior(int prior_lvl){
++    struct proc *curproc = myproc();
++    acquire(&ptable.lock);
++    if(prior_lvl >= 0 && prior_lvl <= 31){
++        curproc->priority = prior_lvl;
++    }
++    release(&ptable.lock);
++}
+ //PAGEBREAK: 42
+ // Per-CPU process scheduler.
+ // Each CPU calls scheduler() after setting itself up.
+@@ -322,37 +496,63 @@ wait(void)
+ void
+ scheduler(void)
+ {
+-  struct proc *p;
+-  struct cpu *c = mycpu();
+-  c->proc = 0;
+-  
+-  for(;;){
+-    // Enable interrupts on this processor.
+-    sti();
++    struct proc *p;
++    struct proc *p1;
++    struct proc *prio;
++    struct proc *p2;
++    struct cpu *c = mycpu();
++    c->proc = 0;
++
++    for(;;){
++        // Enable interrupts on this processor.
++        sti();
++
++        // Loop over process table looking for process to run.
++        acquire(&ptable.lock);
++        for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
++            if(p->state != RUNNABLE)
++                continue;
++
++            prio = p;
++
++            for(p1 = ptable.proc; p1 < &ptable.proc[NPROC]; p1++){
++                if(p1->state != RUNNABLE)
++                    continue;
++
++                if(prio->priority > p1->priority)
++                    prio = p1;
++            }
++            p = prio;
++
++            // Switch to chosen process.  It is the process's job
++            // to release ptable.lock and then reacquire it
++            // before jumping back to us.
++            c->proc = p;
++            switchuvm(p);
++            p->state = RUNNING;
++            p->burstTime++;
++            
++            swtch(&(c->scheduler), p->context);
++            switchkvm();
++
++            // Process is done running for now.
++            // It should have changed its p->state before coming back.
++            c->proc = 0;
++            
++            if(p->priority < 31){
++				p1->priority = p1->priority + 1;
++			}
++            
++            for(p2 = ptable.proc; p2 < &ptable.proc[NPROC]; p2++){
++				if(p2 != p && p1->priority > 0){
++						p1->priority = p1->priority - 1;
++				}
++			}
++        }
+ 
+-    // Loop over process table looking for process to run.
+-    acquire(&ptable.lock);
+-    for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+-      if(p->state != RUNNABLE)
+-        continue;
+-
+-      // Switch to chosen process.  It is the process's job
+-      // to release ptable.lock and then reacquire it
+-      // before jumping back to us.
+-      c->proc = p;
+-      switchuvm(p);
+-      p->state = RUNNING;
+-
+-      swtch(&(c->scheduler), p->context);
+-      switchkvm();
++        release(&ptable.lock);
+ 
+-      // Process is done running for now.
+-      // It should have changed its p->state before coming back.
+-      c->proc = 0;
+     }
+-    release(&ptable.lock);
+-
+-  }
+ }
+ 
+ // Enter scheduler.  Must hold only ptable.lock
+@@ -532,3 +732,23 @@ procdump(void)
+     cprintf("\n");
+   }
+ }
++
++//uint start_time(void){
++	//uint xticks;
++	//acquire(&ptable.lock);
++	//xticks = ticks;
++	//release(&ptable.lock);
++	//return xticks;
++//}
++
++void
++hello(void){
++    cprintf("\n\n Hello from your kernel space! \n\n");
++}
++
++
++
++
++
++
++
+diff --git a/proc.h b/proc.h
+index 1647114..d491a13 100644
+--- a/proc.h
++++ b/proc.h
+@@ -49,8 +49,16 @@ struct proc {
+   struct file *ofile[NOFILE];  // Open files
+   struct inode *cwd;           // Current directory
+   char name[16];               // Process name (debugging)
++  int status;                  // Lab 1: status for exit
++  int priority;                // Lab 2: priority for scheduler
++  uint start_time;			   // Starting time
++  uint burstTime;			   // Burst Time
++  uint runtime;				   // Program Runtime
++  uint responsetime;		   // Inbetween time
+ };
+ 
++uint temptime;
++
+ // Process memory is laid out contiguously, low addresses first:
+ //   text
+ //   original data and bss
+diff --git a/syscall.c b/syscall.c
+index ee85261..327066d 100644
+--- a/syscall.c
++++ b/syscall.c
+@@ -103,6 +103,11 @@ extern int sys_unlink(void);
+ extern int sys_wait(void);
+ extern int sys_write(void);
+ extern int sys_uptime(void);
++extern int sys_hello(void);
++extern int sys_exitS(void);
++extern int sys_waitS(void);
++extern int sys_waitpid(void);
++extern int sys_set_prior(void);
+ 
+ static int (*syscalls[])(void) = {
+ [SYS_fork]    sys_fork,
+@@ -126,6 +131,11 @@ static int (*syscalls[])(void) = {
+ [SYS_link]    sys_link,
+ [SYS_mkdir]   sys_mkdir,
+ [SYS_close]   sys_close,
++[SYS_hello]   sys_hello,
++[SYS_exitS]	  sys_exitS,
++[SYS_waitS]	  sys_waitS,
++[SYS_waitpid] sys_waitpid,
++[SYS_set_prior]	sys_set_prior,
+ };
+ 
+ void
+diff --git a/syscall.h b/syscall.h
+index bc5f356..984b1e8 100644
+--- a/syscall.h
++++ b/syscall.h
+@@ -20,3 +20,8 @@
+ #define SYS_link   19
+ #define SYS_mkdir  20
+ #define SYS_close  21
++#define SYS_hello  22
++#define SYS_exitS	 22
++#define SYS_waitS	 23
++#define SYS_waitpid  24
++#define SYS_set_prior 25
+diff --git a/sysproc.c b/sysproc.c
+index 0686d29..b8cfa54 100644
+--- a/sysproc.c
++++ b/sysproc.c
+@@ -27,6 +27,58 @@ sys_wait(void)
+ }
+ 
+ int
++sys_exitS(void)
++{
++    int status;
++
++    if(argint(0, &status) < 0)
++        return -1;
++    exitS(status);
++    return 0;
++}
++
++int
++sys_waitS(void)
++{
++    int *status;
++
++    if(argptr(0, (char**)&status, sizeof(int*) < 0))
++        return -1;
++    return waitS(status);
++}
++
++int
++sys_waitpid(void)
++{
++    int pid;
++    int *status;
++    int options;
++
++    if(argint(0, &pid) < 0)
++        return -1;
++
++    if(argptr(1, (char**)&status, sizeof(int*) < 0))
++        return -1;
++
++    if(argint(2, &options) < 0)
++        return -1;
++
++    return waitpid(pid, status, options);
++}
++
++int
++sys_set_prior(void)
++{
++    int prior_lvl;
++
++    if(argint(0, &prior_lvl) < 0)
++        return -1;
++
++    set_prior(prior_lvl);
++    return 0;
++}
++
++int
+ sys_kill(void)
+ {
+   int pid;
+@@ -89,3 +141,9 @@ sys_uptime(void)
+   release(&tickslock);
+   return xticks;
+ }
++
++int
++sys_hello(void) {
++    hello();
++    return 0;
++}
+\ No newline at end of file
+diff --git a/test.c b/test.c
+new file mode 100644
+index 0000000..50eedfe
+--- /dev/null
++++ b/test.c
+@@ -0,0 +1,13 @@
++//
++// Created by Rajbir Johar on 4/24/21.
++//
++
++#include "types.h"
++#include "stat.h"
++#include "user.h"
++
++int main(int argc, char *argv[]) {
++    hello();
++    exit();
++}
++
+diff --git a/user.h b/user.h
+index 4f99c52..70f87a5 100644
+--- a/user.h
++++ b/user.h
+@@ -23,6 +23,11 @@ int getpid(void);
+ char* sbrk(int);
+ int sleep(int);
+ int uptime(void);
++int hello(void);
++int	exitS(int) __attribute__((noreturn));
++int waitS(int*);
++int waitpid(int, int*, int);
++void set_prior(int);
+ 
+ // ulib.c
+ int stat(const char*, struct stat*);
+diff --git a/usys.S b/usys.S
+index 8bfd8a1..b0d29f9 100644
+--- a/usys.S
++++ b/usys.S
+@@ -29,3 +29,8 @@ SYSCALL(getpid)
+ SYSCALL(sbrk)
+ SYSCALL(sleep)
+ SYSCALL(uptime)
++SYSCALL(hello)
++SYSCALL(exitS)
++SYSCALL(waitS)
++SYSCALL(waitpid)
++SYSCALL(set_prior)
