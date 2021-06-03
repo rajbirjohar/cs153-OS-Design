@@ -1,0 +1,444 @@
+diff --git a/.idea/deployment.xml b/.idea/deployment.xml
+deleted file mode 100644
+index b14128a..0000000
+--- a/.idea/deployment.xml
++++ /dev/null
+@@ -1,15 +0,0 @@
+-<?xml version="1.0" encoding="UTF-8"?>
+-<project version="4">
+-  <component name="PublishConfigData" autoUpload="Always" serverName="xv6-clion" remoteFilesAllowedToDisappearOnAutoupload="false">
+-    <serverData>
+-      <paths name="xv6-clion">
+-        <serverdata>
+-          <mappings>
+-            <mapping deploy="/cs153/xv6" local="$PROJECT_DIR$" web="/" />
+-          </mappings>
+-        </serverdata>
+-      </paths>
+-    </serverData>
+-    <option name="myAutoUpload" value="ALWAYS" />
+-  </component>
+-</project>
+\ No newline at end of file
+diff --git a/.idea/sshConfigs.xml b/.idea/sshConfigs.xml
+deleted file mode 100644
+index 157949e..0000000
+--- a/.idea/sshConfigs.xml
++++ /dev/null
+@@ -1,8 +0,0 @@
+-<?xml version="1.0" encoding="UTF-8"?>
+-<project version="4">
+-  <component name="SshConfigs">
+-    <configs>
+-      <sshConfig authType="PASSWORD" host="sledge.cs.ucr.edu" id="deb7cfc4-e745-4572-87d5-c3691fb98059" port="22" nameFormat="DESCRIPTIVE" username="sjoha005" />
+-    </configs>
+-  </component>
+-</project>
+\ No newline at end of file
+diff --git a/.idea/vcs.xml b/.idea/vcs.xml
+deleted file mode 100644
+index 94a25f7..0000000
+--- a/.idea/vcs.xml
++++ /dev/null
+@@ -1,6 +0,0 @@
+-<?xml version="1.0" encoding="UTF-8"?>
+-<project version="4">
+-  <component name="VcsDirectoryMappings">
+-    <mapping directory="$PROJECT_DIR$" vcs="Git" />
+-  </component>
+-</project>
+\ No newline at end of file
+diff --git a/.idea/webServers.xml b/.idea/webServers.xml
+deleted file mode 100644
+index 66b18c8..0000000
+--- a/.idea/webServers.xml
++++ /dev/null
+@@ -1,14 +0,0 @@
+-<?xml version="1.0" encoding="UTF-8"?>
+-<project version="4">
+-  <component name="WebServers">
+-    <option name="servers">
+-      <webServer id="6ca0d4ef-b157-4978-b478-89097e4aa3d9" name="xv6-clion" url="http://sledge.cs.ucr.edu">
+-        <fileTransfer rootFolder="/home/csmajs/sjoha005" accessType="SFTP" host="sledge.cs.ucr.edu" port="22" sshConfigId="deb7cfc4-e745-4572-87d5-c3691fb98059" sshConfig="sjoha005@sledge.cs.ucr.edu:22 password">
+-          <advancedOptions>
+-            <advancedOptions dataProtectionLevel="Private" keepAliveTimeout="0" passiveMode="true" shareSSLContext="true" />
+-          </advancedOptions>
+-        </fileTransfer>
+-      </webServer>
+-    </option>
+-  </component>
+-</project>
+\ No newline at end of file
+diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+deleted file mode 100644
+index 94eff50..0000000
+--- a/.idea/workspace.xml
++++ /dev/null
+@@ -1,130 +0,0 @@
+-<?xml version="1.0" encoding="UTF-8"?>
+-<project version="4">
+-  <component name="AutoImportSettings">
+-    <option name="autoReloadType" value="SELECTIVE" />
+-  </component>
+-  <component name="CMakeRunConfigurationManager" shouldGenerate="true" shouldDeleteObsolete="true">
+-    <generated />
+-  </component>
+-  <component name="CMakeSettings">
+-    <configurations>
+-      <configuration PROFILE_NAME="Debug" CONFIG_NAME="Debug" ENABLED="true" />
+-    </configurations>
+-  </component>
+-  <component name="ChangeListManager">
+-    <list default="true" id="75ec7835-3327-4a89-8918-b0945c9726a8" name="Default Changelist" comment="">
+-      <change afterPath="$PROJECT_DIR$/lab3.c" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/Makefile" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/lab3test.c" beforeDir="false" afterPath="$PROJECT_DIR$/lab3test.c" afterDir="false" />
+-    </list>
+-    <option name="SHOW_DIALOG" value="false" />
+-    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+-    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+-    <option name="LAST_RESOLUTION" value="IGNORE" />
+-  </component>
+-  <component name="ClangdSettings">
+-    <option name="formatViaClangd" value="false" />
+-  </component>
+-  <component name="ExternalProjectsData">
+-    <projectState path="$PROJECT_DIR$">
+-      <ProjectState />
+-    </projectState>
+-  </component>
+-  <component name="Git.Settings">
+-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+-  </component>
+-  <component name="GitSEFilterConfiguration">
+-    <file-type-list>
+-      <filtered-out-file-type name="LOCAL_BRANCH" />
+-      <filtered-out-file-type name="REMOTE_BRANCH" />
+-      <filtered-out-file-type name="TAG" />
+-      <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
+-    </file-type-list>
+-  </component>
+-  <component name="ProjectId" id="1r4vsihOEs3CyEk8I1lB4bcpybP" />
+-  <component name="ProjectLevelVcsManager">
+-    <ConfirmationsSetting value="2" id="Add" />
+-  </component>
+-  <component name="ProjectViewState">
+-    <option name="hideEmptyMiddlePackages" value="true" />
+-    <option name="showLibraryContents" value="true" />
+-  </component>
+-  <component name="PropertiesComponent">
+-    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
+-    <property name="ASKED_SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+-    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+-    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+-    <property name="RunOnceActivity.cidr.known.project.marker" value="true" />
+-    <property name="WebServerToolWindowFactoryState" value="false" />
+-    <property name="cf.first.check.clang-format" value="false" />
+-    <property name="cidr.known.project.marker" value="true" />
+-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+-    <property name="nodejs_package_manager_path" value="npm" />
+-    <property name="settings.editor.selected.configurable" value="configurable.group.language" />
+-  </component>
+-  <component name="RunManager">
+-    <configuration name="gdb-remote" type="CLion_Remote" version="1" remoteCommand="localhost:28868" symbolFile="$PROJECT_DIR$/kernel" sysroot="$PROJECT_DIR$">
+-      <debugger kind="GDB" isBundled="true" />
+-      <pathMapping remote=":/home/csmajs/sjoha005/cs153/xv6" local="$PROJECT_DIR$" />
+-      <method v="2" />
+-    </configuration>
+-    <configuration default="true" type="GradleAppRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true">
+-      <method v="2">
+-        <option name="com.jetbrains.cidr.cpp.gradle.execution.GradleNativeBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+-      </method>
+-    </configuration>
+-  </component>
+-  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+-  <component name="TaskManager">
+-    <task active="true" id="Default" summary="Default task">
+-      <changelist id="75ec7835-3327-4a89-8918-b0945c9726a8" name="Default Changelist" comment="" />
+-      <created>1618248386248</created>
+-      <option name="number" value="Default" />
+-      <option name="presentableId" value="Default" />
+-      <updated>1618248386248</updated>
+-      <workItem from="1618248388621" duration="4343000" />
+-      <workItem from="1619271070487" duration="43000" />
+-      <workItem from="1619271142634" duration="9032000" />
+-      <workItem from="1619291520308" duration="1476000" />
+-      <workItem from="1619715574050" duration="2518000" />
+-      <workItem from="1619983826100" duration="1181000" />
+-      <workItem from="1619985633908" duration="617000" />
+-      <workItem from="1619986472118" duration="293000" />
+-      <workItem from="1619992179316" duration="5460000" />
+-      <workItem from="1620001101897" duration="1132000" />
+-      <workItem from="1620016576068" duration="96000" />
+-      <workItem from="1620594240684" duration="7256000" />
+-      <workItem from="1620752452861" duration="2168000" />
+-      <workItem from="1621210161747" duration="1367000" />
+-      <workItem from="1621211615605" duration="4384000" />
+-      <workItem from="1621534335003" duration="1924000" />
+-      <workItem from="1622551178536" duration="159000" />
+-      <workItem from="1622551365614" duration="256000" />
+-      <workItem from="1622551632974" duration="118000" />
+-      <workItem from="1622551761393" duration="2310000" />
+-      <workItem from="1622599529677" duration="397000" />
+-      <workItem from="1622679934680" duration="6387000" />
+-    </task>
+-    <servers />
+-  </component>
+-  <component name="TypeScriptGeneratedFilesManager">
+-    <option name="version" value="3" />
+-  </component>
+-  <component name="Vcs.Log.Tabs.Properties">
+-    <option name="TAB_STATES">
+-      <map>
+-        <entry key="MAIN">
+-          <value>
+-            <State />
+-          </value>
+-        </entry>
+-      </map>
+-    </option>
+-    <option name="oldMeFiltersMigrated" value="true" />
+-  </component>
+-  <component name="XSLT-Support.FileAssociations.UIState">
+-    <expand />
+-    <select />
+-  </component>
+-</project>
+\ No newline at end of file
+diff --git a/Makefile b/Makefile
+index fa07676..2d2b9e4 100644
+--- a/Makefile
++++ b/Makefile
+@@ -177,7 +177,6 @@ UPROGS=\
+ 	_zombie\
+ 	_shm_cnt\
+ 	_null\
+-	_lab3\
+ 
+ fs.img: mkfs README $(UPROGS)
+ 	./mkfs fs.img README $(UPROGS)
+@@ -247,7 +246,7 @@ qemu-nox-gdb: fs.img xv6.img .gdbinit
+ EXTRA=\
+ 	mkfs.c ulib.c user.h cat.c echo.c forktest.c grep.c kill.c\
+ 	ln.c ls.c mkdir.c rm.c stressfs.c usertests.c wc.c zombie.c\
+-	printf.c umalloc.c uspinlock.c shm_cnt.c\ lab3.c\
++	printf.c umalloc.c uspinlock.c shm_cnt.c\
+ 	README dot-bochsrc *.pl toc.* runoff runoff1 runoff.list\
+ 	.gdbinit.tmpl gdbutil\
+ 
+diff --git a/exec.c b/exec.c
+index 7378772..b40134f 100644
+--- a/exec.c
++++ b/exec.c
+@@ -62,11 +62,11 @@ exec(char *path, char **argv)
+ 
+   // Allocate two pages at the next page boundary.
+   // Make the first inaccessible.  Use the second as the user stack.
+-  // sz = PGROUNDUP(sz);
+-    if((sp = allocuvm(pgdir, KERNBASE-2*PGSIZE, KERNBASE)) == 0)
++  sz = PGROUNDUP(sz);
++  if((sz = allocuvm(pgdir, sz, sz + 2*PGSIZE)) == 0)
+     goto bad;
+-//  clearpteu(pgdir, (char*)(sz - 2*PGSIZE));
+-//  sp = sz;
++  clearpteu(pgdir, (char*)(sz - 2*PGSIZE));
++  sp = sz;
+ 
+   // Push argument strings, prepare rest of stack in ustack.
+   for(argc = 0; argv[argc]; argc++) {
+diff --git a/lab3.c b/lab3.c
+deleted file mode 100644
+index e2d5be6..0000000
+--- a/lab3.c
++++ /dev/null
+@@ -1,45 +0,0 @@
+-
+-// Created by Rajbir Johar on 6/1/21.
+-
+-
+-#include "types.h"
+-#include "user.h"
+-
+-// Prevent this function from being optimized, which might give it closed form
+-#pragma GCC push_options
+-#pragma GCC optimize ("O0")
+-static int
+-recurse(int n)
+-{
+-    if(n == 0)
+-        return 0;
+-    return n + recurse(n - 1);
+-}
+-#pragma GCC pop_options
+-
+-int
+-main(int argc, char *argv[])
+-{
+-    int n, m;
+-
+-    if(argc != 2){
+-        printf(1, "Usage: %s levels\n", argv[0]);
+-        exit();
+-    }
+-
+-    n = atoi(argv[1]);
+-    printf(1, "Lab 3: Recursing %d levels\n", n);
+-    m = recurse(n);
+-    printf(1, "Lab 3: Yielded a value of %d\n", m);
+-    exit();
+-}
+-
+-//#include "types.h"
+-//#include "stat.h"
+-//#include "user.h"
+-//
+-//int main(int argc, char* argv[]){
+-//    int v = argc;
+-//    printf(1, "%p\n", &v);
+-//    exit();
+-//}
+\ No newline at end of file
+diff --git a/lab3test.c b/lab3test.c
+deleted file mode 100644
+index 532ae6e..0000000
+--- a/lab3test.c
++++ /dev/null
+@@ -1,46 +0,0 @@
+-
+-// Created by Rajbir Johar on 6/1/21.
+-
+-
+-//#include "types.h"
+-//#include "user.h"
+-//
+-//// Prevent this function from being optimized, which might give it closed form
+-//#pragma GCC push_options
+-//#pragma GCC optimize ("O0")
+-//static int
+-//recurse(int n)
+-//{
+-//    if(n == 0)
+-//        return 0;
+-//    return n + recurse(n - 1);
+-//}
+-//#pragma GCC pop_options
+-//
+-//int
+-//main(int argc, char *argv[])
+-//{
+-//    int n, m;
+-//
+-//    if(argc != 2){
+-//        printf(1, "Usage: %s levels\n", argv[0]);
+-//        exit();
+-//    }
+-//
+-//    n = atoi(argv[1]);
+-//    printf(1, "Lab 3: Recursing %d levels\n", n);
+-//    m = recurse(n);
+-//    printf(1, "Lab 3: Yielded a value of %d\n", m);
+-//    exit();
+-//}
+-
+-#include "types.h"
+-#include "stat.h"
+-#include "user.h"
+-
+-int main(int argc, char* argv[]){
+-    int v = argc;
+-    printf(1, "%p\n", &v);
+-    exit();
+-}
+-
+diff --git a/syscall.c b/syscall.c
+index 59953d5..94ef3c9 100644
+--- a/syscall.c
++++ b/syscall.c
+@@ -17,10 +17,10 @@
+ int
+ fetchint(uint addr, int *ip)
+ {
+-//  struct proc *curproc = myproc();
++  struct proc *curproc = myproc();
+ 
+-//  if(addr >= curproc->sz || addr+4 > curproc->sz)
+-//    return -1;
++  if(addr >= curproc->sz || addr+4 > curproc->sz)
++    return -1;
+   *ip = *(int*)(addr);
+   return 0;
+ }
+@@ -32,12 +32,12 @@ int
+ fetchstr(uint addr, char **pp)
+ {
+   char *s, *ep;
+-//  struct proc *curproc = myproc();
++  struct proc *curproc = myproc();
+ 
+-//  if(addr >= curproc->sz)
+-//    return -1;
++  if(addr >= curproc->sz)
++    return -1;
+   *pp = (char*)addr;
+-  ep = (char*)KERNBASE;
++  ep = (char*)curproc->sz;
+   for(s = *pp; s < ep; s++){
+     if(*s == 0)
+       return s - *pp;
+@@ -59,11 +59,11 @@ int
+ argptr(int n, char **pp, int size)
+ {
+   int i;
+-//  struct proc *curproc = myproc();
++  struct proc *curproc = myproc();
+  
+   if(argint(n, &i) < 0)
+     return -1;
+-    if(size < 0 || (uint)i >= KERNBASE || (uint)i+size > KERNBASE)
++  if(size < 0 || (uint)i >= curproc->sz || (uint)i+size > curproc->sz)
+     return -1;
+   *pp = (char*)i;
+   return 0;
+diff --git a/vm.c b/vm.c
+index c767564..f623aa3 100644
+--- a/vm.c
++++ b/vm.c
+@@ -224,7 +224,7 @@ allocuvm(pde_t *pgdir, uint oldsz, uint newsz)
+   char *mem;
+   uint a;
+ 
+-  if(newsz > KERNBASE)
++  if(newsz >= KERNBASE)
+     return 0;
+   if(newsz < oldsz)
+     return oldsz;
+@@ -335,21 +335,6 @@ copyuvm(pde_t *pgdir, uint sz)
+     if(mappages(d, (void*)i, PGSIZE, V2P(mem), flags) < 0)
+       goto bad;
+   }
+-for(i = KERNBASE-2*PGSIZE; i < KERNBASE; i += PGSIZE){
+-    if((pte = walkpgdir(pgdir, (void *) i, 0)) == 0)
+-        panic("copyuvm: pte should exist");
+-    if(!(*pte & PTE_P))
+-        panic("copyuvm: page not present");
+-    pa = PTE_ADDR(*pte);
+-    flags = PTE_FLAGS(*pte);
+-    if((mem = kalloc()) == 0)
+-        goto bad;
+-    memmove(mem, (char*)P2V(pa), PGSIZE);
+-    if(mappages(d, (void*)i, PGSIZE, V2P(mem), flags) < 0) {
+-        kfree(mem);
+-        goto bad;
+-    }
+-}
+   return d;
+ 
+ bad:
+diff --git a/xv6 b/xv6
+deleted file mode 160000
+index 1496296..0000000
+--- a/xv6
++++ /dev/null
+@@ -1 +0,0 @@
+-Subproject commit 1496296c01bd50765654e61c227599ede447194d
