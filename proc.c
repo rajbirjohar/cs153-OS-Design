@@ -539,13 +539,15 @@ scheduler(void)
             // It should have changed its p->state before coming back.
             c->proc = 0;
             
-            if(p->priority < 31){
+            if(p->priority > 31){
 				p1->priority = p1->priority + 1;
 			}
             
             for(p2 = ptable.proc; p2 < &ptable.proc[NPROC]; p2++){
-				if(p2 != p && p2->priority > 0){
+				if(p2->state != RUNNABLE){
+					if(p2 != p && p2->priority > 0){
 						p2->priority = p2->priority - 1;
+					}
 				}
 			}
         }

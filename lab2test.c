@@ -21,16 +21,16 @@ int main(int argc, char *argv[]){
 //}
 
 int priorityScheduler(void){
-    int pid[6];
+    int pid;
     int i,j,k;
     printf(1,"\nThis lab converts round robin to priority scheduler with a system call. "
              "\nThe priorities range form 0-31 with 0 being the highest priority.\n");
     set_prior(0);
     for (i = 0; i <  6; i++){
-        pid[i] = fork();
-        if (pid[i] > 0 ) {
+        pid = fork();
+        if (pid > 0 ) {
             continue;}
-        else if ( pid[i] == 0){
+        else if ( pid == 0){
             set_prior(30 - 5 * i);
             for (j=0;j<50000;j++){
 				asm("nop");

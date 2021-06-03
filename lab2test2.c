@@ -10,7 +10,7 @@ int main(int argc, char *argv[]){
 
 int priorityScheduler(void){
     int pid[5];
-    int priority[5] = {22, 13, 18, 6, 30};
+    int priority[5] = {22, 13, 18, 6, 31};
     int i,j,k;
     printf(1,"\nThis lab converts round robin to priority scheduler with a system call. "
              "\nThe priorities range form 0-31 with 0 being the highest priority.\n");
